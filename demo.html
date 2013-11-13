@@ -1,0 +1,231 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Domo for using jGraphic</title>
+<style>
+	.testCanvas{
+		position: absolute;		
+		border: black 1px solid;		
+	}
+	#testCanvas{
+		top:200px;
+		left:200px;
+	}
+</style>
+<script type="text/javascript" src="js/excanvas.js"></script>
+<script type="text/javascript" src="js/jquery-1.9.1.js"></script>
+<script type="text/javascript" src="js/jGraphic.js"></script>
+</head>
+<body>
+	<h1>Domonstration of jGraphic</h1>	
+	<pre>
+	open console to see event attack to image objects.
+	First canvas: show what type of image object available.
+	Second canvas: is a small test for performance of the jGraphic
+There are 1000 images render. And it refresh twice every 100ms to show and hide 
+random image on canvas.		
+	</pre>
+    <canvas id="testCanvas0" class="testCanvas" width="400" height="300"></canvas>
+	<canvas id="testCanvas" class="testCanvas" width="400" height="300"></canvas>	
+	<canvas id="testCanvas1" class="testCanvas" style="top:100px; left: 700px;" width="640" height="400"></canvas>		
+	<button id="start" style="top:50px; left: 700px;position: absolute;	">Start</button>
+	<button id="stop" disabled="disabled" style="top:50px; left: 750px;position: absolute;	">Stop</button>
+	<script>
+		function moveCanvas(){
+			$("#testCanvas0,#testCanvas").each(function(){
+				var pos = $(this).offset();
+				$(this).css("top",pos.top - 10);
+				$(this).css("left",pos.left - 10);
+			});
+			c.initCanvasPos();
+		}
+		var tc = $("#testCanvas").position();
+        /*
+	    $("#testCanvas0").css("top", tc.top);
+	    $("#testCanvas0").css("left", tc.left);
+	    $("#testCanvas0").css("z-index",0);
+	    var ctx = $("#testCanvas0").get(0).getContext("2d");
+	    ctx.fillStyle = "#99CCFF";
+	    ctx.globalAlpha = 0.2;
+	    ctx.fillRect(0, 0, 400, 300);
+        */
+		var c = $("#testCanvas").jGraphic();
+		
+
+
+		var rect = c.rectangle(10,10,50,30,{fillStyle:"red",strokeStyle:"black",gradientLayer: { isHorizontal: true } });
+		rect.test = "abc";
+		
+		var testEvent = function(event){			
+			console.log("%s rectangle0, test: %s",event.type, event.target.test);
+		};		
+		
+		rect.bind("click mousedown mouseup mousemove mouseout mouseover",testEvent);
+
+		
+		rect.mouseover(function(event){
+			rect.update({fillStyle:"orangered",globalAlpha:.3});
+		});
+		rect.mouseout(function(event){
+			rect.update({fillStyle:"red"});
+		});
+		
+		
+		var rect1 = c.rectangle(60,10,50,30,{fillStyle:"orange",strokeStyle:"green"});		
+		rect1.bind("click mousedown mouseup mousemove mouseout mouseover",function(event){			
+			console.log("%s rectangle1",event.type);
+		});
+		rect1.mouseover(function(){
+			rect1.update({fillStyle:"coral"});
+		});
+		rect1.mouseout(function(){
+			rect1.restore();
+		});
+		
+		var option1 = {fillStyle: "yellow", strokeStyle:"black", lineWidth: 2};
+		var pie1 = c.pie(100,100,50,-45,45,option1);
+		pie1.bind("click mousedown mouseup mousemove mouseout mouseover",function(event){			
+			console.log("%s pie1",event.type);
+		});
+		pie1.mouseover(function(){			
+			pie1.lighten(50);
+		});
+		pie1.mouseout(function(){
+			pie1.restore();
+		});
+		
+		var option2 = {fillStyle: "red", strokeStyle:"black", lineWidth: 2};
+		var pie2 = c.pie(100,100,50,45,90,option2);
+		pie2.bind("click mousedown mouseup mousemove mouseout mouseover",function(event){			
+			console.log("%s pie2",event.type);
+		});
+		pie2.mouseover(function() {
+		    pie2.update({ fillStyle: "lightcoral" });
+		});
+		pie2.mouseout(function(){
+			pie2.update(option2);
+		});
+		
+		var option3 = {fillStyle: "green", strokeStyle:"black", lineWidth: 2};
+		var pie3 = c.pie(100,100,50,90,200, option3);
+		pie3.bind("click mousedown mouseup mousemove mouseout mouseover",function(event){			
+			console.log("%s pie3",event.type);
+		});
+		pie3.mouseover(function(){
+			pie3.update({fillStyle:"lightgreen"});
+		});
+		pie3.mouseout(function(){
+			pie3.update(option3);
+		});
+		
+		var option4 = {fillStyle: "blue", strokeStyle:"black", lineWidth: 2};
+		var pie4 = c.pie(100,100,50,200,315,option4);
+		pie4.bind("click mousedown mouseup mousemove mouseout mouseover",function(event){			
+			console.log("%s pie4",event.type);
+		});
+		pie4.mouseover(function(){
+			pie4.update({fillStyle:"lightblue"})
+		});
+		pie4.mouseout(function(){
+			pie4.restore();
+		});
+		
+		text = c.text(150,50,"test",{font:"bold 20px arial",fillStyle:"darkgreen"});
+		text.mouseover(function(){
+			console.log("over text");
+		});
+		text.mouseout(function(){
+			console.log("out text");
+		})
+		
+		line = c.line(150,150,250,50,{lineWidth:5,strokeStyle:"red",delta:2});
+		line.bind("mouseover mouseout",function(event){
+			console.log("line: %s", event.type);
+		});
+		
+		dline = c.dashLine(150,150,250,250,{da:[2,2],lineWidth:1, delta: 2,strokeStyle:"blue"});
+		dline.bind("mouseover mouseout",function(event){
+			console.log("dash line: %s", event.type);
+		});
+				
+		triangle = c.triangle(50,250,130,150,100,230);		
+		triangle.bind("mouseover mouseout",function(event){
+			console.log("triangle: %s", event.type);
+		});
+		
+		circle = c.circle(300,200, 20,{fillStyle:"orange", lineWidth:0});
+		circle.bind("mouseover mouseout",function(event){
+			console.log("circle: %s", event.type);
+		});
+		circle.click(function(){
+			console.log("get circle");
+		});
+		
+		triangle1 = c.isoscelesTriangle(300,50,100,60,{fillStyle:"red"});
+		triangle1.bind("mouseover mouseout",function(event){
+			console.log("triangle1: %s", event.type);
+		});
+		
+		triangle2 = c.isoscelesTriangle(300,50,50,60,{fillStyle:"green"});
+		triangle2.bind("mouseover mouseout",function(event){
+			console.log("triangle2: %s", event.type);
+		});
+		
+		triangle3 = c.isoscelesTriangle(300,50,20,60,{fillStyle:"blue"});
+		triangle3.bind("mouseover mouseout",function(event){
+			console.log("triangle3: %s", event.type);
+		});
+		
+		//============================= test on canvas 2 ==========================================
+		var c1 = $("#testCanvas1").jGraphic();
+		
+		var step = 16;
+		var images = [];		
+		var isCanvas = (typeof(HTMLCanvasElement) != "undefined");
+		var maxLeft = isCanvas ? c1.width() : 16*10;
+		var maxTop = isCanvas ? c1.height() : 16*10;		
+		if(isCanvas){
+			console.log("IE8 and below using extended canvas and will have problem on image function");
+		}
+		var start = new Date();
+		for(var i = 0; i<maxLeft; i+=step){
+			for(var j = 0; j<maxTop; j+=step){
+				(function(m,n){
+					var image = c1.image("icons/bomb.png",m,n);
+					image.click(function(){
+						console.log("current image: i: %d, j: %d, index: %d",m/step+1,n/step+1, n/step*maxLeft/step+m/step);
+					});
+					images.push(image);					
+				})(i,j)
+			}
+		}
+		var end = new Date();
+		console.log("Render total %d images takes: %d ms", images.length,end-start);
+		
+		start = new Date();
+		c1.refresh();
+		end = new Date();
+		console.log("Refresh total %d images takes: %d ms", images.length,end-start);
+		var total = images.length;
+		var lastIndex = null;
+		var interval;
+		$("#stop").click(function(){
+			$("#stop").attr("disabled","disabled");
+			$("#start").removeAttr("disabled");
+			clearInterval(interval);
+		});
+		$("#start").click(function(){
+			$("#start").attr("disabled","disabled");
+			$("#stop").removeAttr("disabled");
+			interval = setInterval(function(){
+				var index = Math.floor(Math.random()*total);
+				if(lastIndex!==null) images[lastIndex].show();
+				images[index].hide();
+				lastIndex = index;
+			},100);
+		});		
+		
+	</script>
+</body>
+</html>
